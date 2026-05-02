@@ -11,6 +11,7 @@ import GoldDetails from "./steps/GoldDetails";
 import BusinessInfo from "./steps/BusinessInfo";
 import Employment from "./steps/Employment";
 import { useLoan } from "@/context/LoanContext";
+  import { submitLoan } from "@/services/loanService";
 
 export default function LoanFlowPage() {
   const params = useParams();
@@ -28,10 +29,26 @@ const { data, updateData } = useLoan();
 
   const back = () => setStepIndex((prev) => Math.max(prev - 1, 0));
 
-  const submit = () => {
-    console.log("FINAL:", formData);
-    alert("Submitted ✅");
+
+
+const submit = async () => {
+  const finalData = {
+    ...formData,
+    bankCode: params.bank,     // ✅ dynamic bank
+    loanType: params.type,     // ✅ dynamic loan type
   };
+
+  console.log("FINAL SUBMIT:", finalData);
+
+  try {
+    const res = await submitLoan(finalData);
+    alert("Loan Submitted ✅");
+    console.log(res);
+  } catch (err) {
+    console.error(err);
+    alert("Submission failed ❌");
+  }
+};
 
   const step = steps[stepIndex];
 

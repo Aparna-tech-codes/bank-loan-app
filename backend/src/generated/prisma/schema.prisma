@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Bank {
+  id    String @id @default(uuid())
+  name  String
+  code  String @unique // hdfc, icici
+  theme Json?
+
+  loans LoanApplication[]
+}
+
+model LoanApplication {
+  id String @id @default(uuid())
+
+  bankId String
+  bank   Bank   @relation(fields: [bankId], references: [id])
+
+  loanType String // personal | gold | business
+
+  // PERSONAL INFO
+  fullName         String
+  email            String
+  mobile           String
+  dob              DateTime
+  currentAddress   String
+  permanentAddress String
+
+  // EMPLOYMENT
+  employmentType String // employed | self-employed
+  companyName    String?
+  businessName   String?
+  income         Float?
+  turnover       Float?
+
+  // GOLD LOAN
+  goldWeight Float?
+  goldType   String?
+
+  // DOCUMENTS
+  photo        String?
+  idProof      String?
+  addressProof String?
+  incomeProof  String?
+
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
+}
